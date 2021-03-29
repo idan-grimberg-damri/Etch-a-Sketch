@@ -1,0 +1,16 @@
+body{
+    text-align: center;
+}
+
+.container{
+    display: grid;
+    border: 3px solid;
+    width: 480px;
+    height: 480px;
+    margin: 20px auto;
+
+}
+
+
+
+
