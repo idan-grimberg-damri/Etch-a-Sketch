@@ -2,8 +2,8 @@
 let isFreeDraw;
 // Will point to the childs of the container (the squares contained in the board).
 let children;
-const container = document.querySelector('.container');
 
+const container = document.querySelector('.container');
 const minColSize = 1;
 const maxColSize = 32;
 const defaultColSize = 16;
@@ -12,7 +12,7 @@ const brightestColorLim = 256;
 
 /**
  * Get the current board element we hovered above and give it a random background color .
- * @param {*} event Description of the hover event.
+ * @param {Event} event Description of the hover event.
  */
  const onBoardElementMouseOver = (event) => {
     event.currentTarget.setAttribute('style', getRandomColor());
@@ -25,7 +25,7 @@ setBoard(true);
 
 /**
  * Set a square board that allows the user to sketch random color squeres in it.
- * @param isFirstPlay False if the user already presed the new board button, true otherwise .
+ * @param {Boolean} isFirstPlay False if the user already presed the new board button, true otherwise .
  */
 function setBoard(isFirstPlay){
     // Initially, the user can't draw while hovering the board.
@@ -101,8 +101,8 @@ function setOnBoardClickListener(){
 
 /**
  *
- * @param {*} num A value entered to the prompt window from the user.
- * @returns True if num is a positive natural number, false otherwise.
+ * @param {Number} num A value entered to the prompt window from the user.
+ * @returns True if num is a positive natural number in the valid range, false otherwise.
  */
 function isInputValid(num){
     return num !== Infinity && num >= minColSize && num <= maxColSize && Math.floor(num) === num;
