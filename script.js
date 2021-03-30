@@ -21,42 +21,45 @@ const brightestColorLim = 256;
 
 setOnNewBoardClickListener();
 setOnBoardClickListener();
-setBoard(true);
+buildBoard(defaultColSize);
+
 
 /**
- * Set a square board that allows the user to sketch random color squeres in it.
- * @param {Boolean} isFirstPlay False if the user already presed the new board button, true otherwise .
+ * Prompt the user for the number of collumns that the board will have.
+ * @returns The number of columns that the board will have. 
  */
-function setBoard(isFirstPlay){
+function promptUser(){
     // Initially, the user can't draw while hovering the board.
     isFreeDraw = false;
-
-    let colSize;
-    // If the user already pressed (sometime) on the new board button then prompt him to enter
-    // the number of columns.
-    if (!isFirstPlay)
-        colSize = prompt(`Enter the number of columns (between ${minColSize} to ${maxColSize})`, defaultColSize);
-    // Else set the column size to the default column size.
-    else
-        colSize = defaultColSize;
     
-    // If the user didn't press the cancel button in the prompt window then proceed.
-    if (colSize !== null){
-        // While the user input is not valid continue to prompt the user (calling setBoard recursively).
-        while(isNaN(colSize) || !isInputValid(parseInt(colSize)))
-            setBoard(false);
-        // Get the number value of colSize.
-        colSize = parseInt(colSize);
-        // Set the structure of the board.
-        container.style.gridTemplateColumns = `repeat(${colSize}, 1fr)`;
-        // Add colSize * colSize div elements to the board.
-        for (let i = 0; i < colSize ** 2; i++)    
-            container.appendChild(document.createElement('div'));
+    let cols;
+    do {
+        // Prompt the user to enter the number of columns.
+        // Continue to prompt the user while the input is invalid.
+        cols = prompt(`Enter the number of columns (between ${minColSize} to ${maxColSize})`, defaultColSize);
+    }while (cols !== null && (isNaN(cols) || !isInputValid(parseInt(cols))));
+   
+    //  If the user pressed the cancel button then return the default number of columns.
+    if (cols === null )
+        return defaultColSize;
         
-        children = container.childNodes; 
+    // Else return the numeric value for the number of columns that the user entered.
+    return parseInt(cols);
+             
+}
+
+/**
+ * Build the drawing board.
+ * @param {Number} cols The number of columns that the board will have.  
+ */
+function buildBoard(cols){
+    // Set the structure of the board.
+    container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    // Add cols * cols div elements to the board.
+    for (let i = 0; i < cols ** 2; i++)    
+        container.appendChild(document.createElement('div'));
         
-    }
-            
+    children = container.childNodes; 
 }
 
 /**
@@ -70,8 +73,8 @@ function setOnNewBoardClickListener(){
         // While we didn't finish iterating the board's squares, remove the current square from the board.
         while (curr > -1)
             container.removeChild(children[curr--]);
-        // Let the user set a new board.
-        setBoard(false);
+        // Build a new board according to the user's choice for the number of columns.
+        buildBoard(promptUser());
 
     });
 }
