@@ -1,83 +1,116 @@
+// True if the user can draw while hovering the board, false otherwise.
+let isFreeDraw;
+// Will point to the childs of the container (the squares contained in the board).
+let children;
+const container = document.querySelector('.container');
+
 const minColSize = 1;
 const maxColSize = 32;
 const defaultColSize = 16;
 const brightestColorLim = 256;
-const container = document.querySelector('.container');
+
+
+/**
+ * Get the current board element we hovered above and give it a random background color .
+ * @param {*} event Description of the hover event.
+ */
+ const onBoardElementMouseOver = (event) => {
+    event.currentTarget.setAttribute('style', getRandomColor());
+};
+
 
 setOnNewBoardClickListener();
+setOnBoardClickListener();
 setBoard(true);
 
 /**
- * Set a square board that allows the user to sketch random color squeres in it
- * @param isFirstPlay false if the user already presed the new board button, true otherwise 
+ * Set a square board that allows the user to sketch random color squeres in it.
+ * @param isFirstPlay False if the user already presed the new board button, true otherwise .
  */
 function setBoard(isFirstPlay){
+    // Initially, the user can't draw while hovering the board.
+    isFreeDraw = false;
+
     let colSize;
-    // if the user already pressed (sometime) on the new board button then prompt him to enter
+    // If the user already pressed (sometime) on the new board button then prompt him to enter
     // the number of columns.
     if (!isFirstPlay)
         colSize = prompt(`Enter the number of columns (between ${minColSize} to ${maxColSize})`, defaultColSize);
-    // else set the column size to the default column size.
+    // Else set the column size to the default column size.
     else
         colSize = defaultColSize;
     
-    // if the user didn't press the cancel button in the prompt window then proceed.
+    // If the user didn't press the cancel button in the prompt window then proceed.
     if (colSize !== null){
-        // while the user input is not valid continue to ask him for a prompt (calling setBoard recursively).
-        while(!isInputValid(parseInt(colSize)))
-            setBoard();
-        // get the number value of colSize.
+        // While the user input is not valid continue to prompt the user (calling setBoard recursively).
+        while(isNaN(colSize) || !isInputValid(parseInt(colSize)))
+            setBoard(false);
+        // Get the number value of colSize.
         colSize = parseInt(colSize);
-        // set the structure of the grid.
+        // Set the structure of the board.
         container.style.gridTemplateColumns = `repeat(${colSize}, 1fr)`;
-        // add colSize * colSize div elements to the grid.
-        // for each div element add a mouseover listener such that when the user hovers over some square
-        // in the grid then set the background of that square (div) to a random color.
-        // finally add the square div to the grid (his container).
-        for (let i = 0; i < colSize ** 2; i++){
-            let div = document.createElement('div');
-            div.addEventListener('mouseover', (event) => {
-                event.currentTarget.setAttribute('style', getRandomColor());  ;    
-                
-            });
-            container.appendChild(div);
-        }
+        // Add colSize * colSize div elements to the board.
+        for (let i = 0; i < colSize ** 2; i++)    
+            container.appendChild(document.createElement('div'));
+        
+        children = container.childNodes; 
         
     }
             
 }
 
 /**
- * set a listener to when the user clicks the new board button
+ * Set a listener to when the user clicks the new board button.
  */
 function setOnNewBoardClickListener(){
     let button = document.querySelector('button');
     button.addEventListener('click', () => {
-        // get the list of the grid's squares.
-        let children = container.childNodes;
-        // get the location of the last square.
+        // Get the location of the last square.
         let curr = children.length - 1;
-        // while we did't finish iterating of the the grid's squares remove the current square from the grid.
+        // While we didn't finish iterating the board's squares, remove the current square from the board.
         while (curr > -1)
             container.removeChild(children[curr--]);
-        // allow the user to set a new board.
+        // Let the user set a new board.
         setBoard(false);
 
     });
 }
+/**
+ * Set a listener to when the user clicks on the board.
+ * Each click enables\disables the ability of the user to draw while hovering the board.
+ */
+function setOnBoardClickListener(){
+    container.addEventListener('click', () => {
+        let curr = children.length - 1;
+        // If the user was unable to draw while hovering the board before, now he can (and vise versa).
+        isFreeDraw = !isFreeDraw;
+        // If the user is now able to draw while hovering the board then add an hover listener to each board element.
+        if (isFreeDraw){
+            while (curr > -1)
+                children[curr--].addEventListener('mouseover', onBoardElementMouseOver);
+        }
+        // Else the user is now unable to draw while hovering the board, so remove the hover listener for each board element.
+        else{
+            while (curr > -1)
+                children[curr--].removeEventListener('mouseover', onBoardElementMouseOver);
+        }
+
+    });
+}
+
 
 /**
  *
- * @param {*} num a value entered to the prompt window from the user.
- * @returns true if num is a positive natural number, false otherwise.
+ * @param {*} num A value entered to the prompt window from the user.
+ * @returns True if num is a positive natural number, false otherwise.
  */
 function isInputValid(num){
-    return !isNaN(num) && num !== Infinity && num >= minColSize && num <= maxColSize && Math.floor(num) === num;
+    return num !== Infinity && num >= minColSize && num <= maxColSize && Math.floor(num) === num;
 }
 
 /**
- * builds a random color
- * @returns a css value for the style attribute, describing a random background color for a specific square in the grid.
+ * Builds a random color
+ * @returns A css value for the style attribute, describing a random background color for a specific square in the board.
  */
 function getRandomColor(){
     let r = Math.floor(Math.random() * brightestColorLim);
