@@ -4,7 +4,6 @@ const defaultColSize = 16;
 const brightestColorLim = 256;
 const container = document.querySelector('.container');
 
-
 setOnNewBoardClickListener();
 setBoard(true);
 
