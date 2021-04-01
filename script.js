@@ -14,8 +14,9 @@ const brightestColorLim = 256;
  * Get the current board element we hovered above and give it a random background color .
  * @param {Event} event Description of the hover event.
  */
- const onBoardElementMouseOver = (event) => {
-    event.currentTarget.setAttribute('style', getRandomColor());
+ const setOnSquareHoverListener = (event) => {
+    if (event.target.className !== 'container')
+        event.target.setAttribute('style', getRandomColor());
 };
 
 
@@ -29,8 +30,6 @@ buildBoard(defaultColSize);
  * @returns The number of columns that the board will have. 
  */
 function promptUser(){
-    // Initially, the user can't draw while hovering the board.
-    isFreeDraw = false;
     
     let cols;
     do {
@@ -73,6 +72,10 @@ function setOnNewBoardClickListener(){
         // While we didn't finish iterating the board's squares, remove the current square from the board.
         while (curr > -1)
             container.removeChild(children[curr--]);
+        
+        // Disable the ability to draw while hovering the board.
+        isFreeDraw = false;
+        container.removeEventListener('mouseover', setOnSquareHoverListener);
         // Build a new board according to the user's choice for the number of columns.
         buildBoard(promptUser());
 
@@ -84,18 +87,15 @@ function setOnNewBoardClickListener(){
  */
 function setOnBoardClickListener(){
     container.addEventListener('click', () => {
-        let curr = children.length - 1;
         // If the user was unable to draw while hovering the board before, now he can (and vise versa).
         isFreeDraw = !isFreeDraw;
         // If the user is now able to draw while hovering the board then add an hover listener to each board element.
         if (isFreeDraw){
-            while (curr > -1)
-                children[curr--].addEventListener('mouseover', onBoardElementMouseOver);
+            container.addEventListener('mouseover', setOnSquareHoverListener)
         }
         // Else the user is now unable to draw while hovering the board, so remove the hover listener for each board element.
         else{
-            while (curr > -1)
-                children[curr--].removeEventListener('mouseover', onBoardElementMouseOver);
+            container.removeEventListener('mouseover', setOnSquareHoverListener);
         }
 
     });
