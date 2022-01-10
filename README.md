@@ -1,4 +1,4 @@
-[Live Demo](https://idan-grimberg-damri.github.io/Etch-a-Sketch/)
+[Live Demo](https://idandam.github.io/Etch-a-Sketch/)
 
 The Odin Project assigmnent - implement a variant of Etch-a-Sketch.
 
